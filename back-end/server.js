@@ -32,7 +32,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Routes
-//USER REGISTRATION -> POST REQUEST
+// USER REGISTRATION -> POST REQUEST
 
 app.post("/register", async (req, res) => {
   try {
@@ -44,7 +44,7 @@ app.post("/register", async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new User({ email, username, password: hashedPassword });
-    await User.save(newUser);
+    await newUser.save();
 
     return res.status(200).json({ message: "successfully saved", newUser });
   } catch (error) {
@@ -52,5 +52,21 @@ app.post("/register", async (req, res) => {
     return res
       .status(500)
       .json({ message: "Failed to register the user", error: error.message });
+  }
+});
+
+// GET REGISTERED USERS
+
+app.get("/user", async (req, res) => {
+  try {
+    const users = await User.find();
+
+    if (!users) {
+      throw Error("Didn't get user in DB");
+    }
+    res.status(201).json(users);
+  } catch (error) {
+    console.log("Error while getting user : ", error);
+    res.status(404).json({ message: "Error while fetching user" });
   }
 });
