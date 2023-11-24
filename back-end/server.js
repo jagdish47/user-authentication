@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import bodyParser from "body-parser";
 import cors from "cors";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 import User from "./models/userSchema.js";
 
@@ -68,5 +69,31 @@ app.get("/user", async (req, res) => {
   } catch (error) {
     console.log("Error while getting user : ", error);
     res.status(404).json({ message: "Error while fetching user" });
+  }
+});
+
+//GET LOGIN
+
+app.post("/login", async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    const user = await User.findOne({ username });
+
+    if (!user) {
+      return res.status(404).json({ error: "Invalid Credentials!" });
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      return res.status(404).json({ error: "Invalid Credentials!" });
+    }
+
+    const token = jwt.sign({ userId: user._id }, "secret", {
+      expiresIn: "1hr",
+    });
+    res.json({ message: "Login successfully" });
+  } catch (error) {
+    res.status(500).json({ error: "Error logging in" });
   }
 });
