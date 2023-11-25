@@ -1,8 +1,16 @@
 import React from "react";
 
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 const Navbar = () => {
+  const isUserSignedIn = !!localStorage.getItem("token");
+  const navigate = useNavigate();
+
+  const handleSignOut = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
+
   return (
     <nav className="bg-orange-500 p-3 text-white font-bold font-mono">
       <div className="container mx-auto flex items-center justify-between">
@@ -13,12 +21,24 @@ const Navbar = () => {
         </div>
         <div>
           <ul className="flex gap-4">
-            <NavLink to="/login">
-              <li>Login</li>
-            </NavLink>
-            <NavLink to="register">
-              <li>Register</li>
-            </NavLink>
+            {isUserSignedIn ? (
+              <>
+                <NavLink to="/account">Account</NavLink>
+                <li>
+                  <button onClick={handleSignOut}>Sign out</button>
+                </li>
+              </>
+            ) : (
+              <>
+                {" "}
+                <NavLink to="/login">
+                  <li>Login</li>
+                </NavLink>
+                <NavLink to="register">
+                  <li>Register</li>
+                </NavLink>
+              </>
+            )}
           </ul>
         </div>
       </div>

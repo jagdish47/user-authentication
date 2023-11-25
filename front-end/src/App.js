@@ -10,6 +10,8 @@ import { Route, Routes } from "react-router-dom";
 import "./App.css";
 
 function App() {
+  const isLoggedIn = !!localStorage.getItem("token");
+
   return (
     <div>
       <Navbar />
@@ -18,7 +20,8 @@ function App() {
         <Route index path="/" element={<Home />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/account" element={<Account />} />
+
+        {isLoggedIn && <Route path="/account" element={<Account />} />}
 
         <Route path="*" element={<Error />} />
       </Routes>
